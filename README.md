@@ -53,7 +53,7 @@ The following line launchs the two experiments and combines them in packs togeth
 $ python launch.py --file experiments/example1.json experiments/example2.json 
 ```
 
-#Packing and batching
+###Packing and batching
 
 Multiple Experiments can be packed in one or few jobs by using the --pack-params and --pack-size options
 
@@ -94,7 +94,7 @@ $ python csv.py --file experiments/examples*json --csv-params nmess comp --csv-s
 
 ## Customize some Tizona aspects
 
-# Rerunning experiments that failed
+### Rerunning experiments that failed
 
 Tizona detects if an experiment was already run by looking if its stdout file was created.
 Should you want to add a different functionality such as re-run if an error happened or re-run until a certain
@@ -102,7 +102,7 @@ algorithmic condition is met you can edit the models/base/model.py is_executed J
 
 You can even create a new model under the models directory
 
-# Parsing job statistics for CSV generation
+### Parsing job statistics for CSV generation
 
 Right now Tizona can only work with time as an statistic as long as the binary run prints a line "time x" on its output
 models/base/stats.py file can be modified to support user defined stats, a dictionary should be populated with the stat names
