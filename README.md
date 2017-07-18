@@ -1,33 +1,33 @@
-# Batcher, A tool for managing workloads in HPC environments
+# Tizona, A tool for managing workloads in HPC environments
 
-## What is Batcher
+## What is Tizona
 
-Batcher is a simple tool for launching experiments in HPC clusters
+Tizona is a simple tool for launching experiments in HPC clusters
 and collect their results creating csv files.
 
-Batcher allows users to specify their set of experiments in a single 
+Tizona allows users to specify their set of experiments in a single 
 json file and it automatically generates and submits the corresponding 
 jobs to the cluster batch system.
 
 Batches is being developed at the Barcelona Supercomputing Center.
 
-## Using Batcher with your application
+## Using Tizona with your application
 
-Batcher uses modules to deal with workloads unique characteristics,
+Tizona uses modules to deal with workloads unique characteristics,
 the modules obbey a simple interface and implement functionality such as
 writing a file configuration, or download a set of required files before launching the experiments
 where simple bash scripts are not flexible enough.
 
-## Batcher configuration
+## Tizona configuration
 
-Batcher is configured using the config.json at the root dir,
+Tizona is configured using the config.json at the root dir,
 in this file module specific configuration parameters are written.
 
-## Batcher experiments
+## Tizona experiments
 
-Batcher runs experiments using json files containing a "params" dict.
+Tizona runs experiments using json files containing a "params" dict.
 In this params dict the values for the parameters are specified as scalar values or lists.
-If multiple parameters have a list as their value, Batcher will obtain all the possible combinations of all lists
+If multiple parameters have a list as their value, Tizona will obtain all the possible combinations of all lists
 it is up to the module code to detect valid or invalid configurations of parameters within the job factory method
 look at the provided example.json provided for further information
 
