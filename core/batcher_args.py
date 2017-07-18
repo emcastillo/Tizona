@@ -53,6 +53,14 @@ class BatcherArgs :
                             help='dont sync files when calling remote', required = False,
                             action='store_true')
 
+        parser.add_argument('-pp','--pack-params', nargs='+', type=str, 
+                            help="Pack experiments in a job file by this list of params values", required = False, 
+                            default = None)
+
+        parser.add_argument('-ps','--pack-size', type=int, 
+                            help="Number of experiments PER job file", required = False, 
+                            default = None)
+
         self.parser = parser
 
     def parse_args(self):

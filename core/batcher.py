@@ -41,7 +41,7 @@ from results.CSVResults import Results
 
 class Batcher(object):
     """
-    Interface to Batchers main operations
+    Interface to Tizona main operations
     
     1. Launch Experiments
     2. Collect experiments
@@ -74,13 +74,24 @@ class Batcher(object):
         Experiments are initialized first by calling the prepare method in the corresponding
         job module and then the already executed ones are removed to prevent
         relaunching them
+        
+        Multiple experiments can be packed in jobs as specified by the param list in --pack-params
+        And every pack will have at most --pack-size experiments
+
+        Packing code contributed by LLNL        
 
         The current host, as specified in the config.json file will execute the experiments
         """
+        pack_params = self.config.get_args().pack_params
+        pack_size   = self.config.get_args().pack_size
+
+        random.shuffle(self.experiments)
+
         self.__prepare_experiments()
         self.__remove_executed()       
         
-        for job in self.experiments:
+        jobs = self.__pack_experiments(pack_params, pack_size)
+        for job in jobs:
             hosts.current_host(self.config).run_job(job)
 
     def results(self):            
@@ -113,3 +124,48 @@ class Batcher(object):
     def __remove_executed(self):
         """ Remove already executed experiments """
         self.experiments = filter(lambda x: not x.is_executed(), self.experiments)
+
+    def __pack_experiments(self, pack_params, pack_size):
+        """
+        Create Packed jobs were all the experiments within a job
+        have the same value for the params specified in pack_params
+        and each job has at most pack_size experiments
+        
+        Arguments: 
+            pack_params (list of str) : name of the params as specified in the params field of the json
+            pack_size (int) : maximum number of experiments per job 
+        """
+
+        if (not pack_params) and (not pack_size):
+            # no pack especified
+            return self.experiments
+
+        if pack_params:
+            # Create groups of experiments with that share the same pack_params value
+            parts = self.__group_exps(self.experiments, pack_params)
+            packs = deque([])
+            if pack_size:
+                for part in parts:
+                    packs.extend([part[i:i+pack_size] for i in range(0, len(part), pack_size)])
+        elif pack_size:
+            packs = [self.experiments[i:i+pack_size] for i in range(0, len(self.experiments), pack_size)]
+
+        return [self.config.get_job_model().PackedJob(i,pack) for i, pack in enumerate(packs)]
+
+ 
+    def __group_exps(self, jobs, params):
+        """
+        Create sub list of experiments grouped by the params list values
+        """
+        parts = []
+        if not len(params):
+            return [jobs]
+
+        partition = defaultdict(list)
+        for job in jobs:
+            partition[job.get_param(params[0])].append(job)
+        
+        for key in partition:
+            parts += self.__group_exps(partition[key],params[1:]) 
+        return parts
+

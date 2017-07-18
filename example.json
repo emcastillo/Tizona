@@ -40,7 +40,13 @@
     # IN THIS CASE THE README.md EXAMPLE WILL HAVE ONE COLUMN PER comp AND runs value 
     # n_0_RUN_0 n_0_RUN_1, ....
     "graph_name"  : "n_%(size_Y)d_RUN_%(runs)d",
-    
+     
+    # WHEN USING PACKING OPTIONS, A PACK NAME NEEDS TO BE SPECIFIED
+    "pack_name"   : "PACK",
+
+    # SOME CLUSTERS MIGHT REQUIRE A WALL TIME  
+    "wall_time"   : "03:00:00",
+
     # COMMAND LINE THE JOB WILL EXECUTE
     # One line per cmd, ADD semicolon at the END of each line
     "bin" : ["cd $HOME;",
@@ -49,6 +55,7 @@
     # PARAM COMBINATIONS ONLY HAPPEN IN THIS LEVEL
     "params" : {
         # py: MEANS IT IS A PYTHON STATEMENT
+        "nodes" : 32,
         "ranks" : [2,4,8],
         # APP TO BE RUN PARAMS
         # BATCHER WILL GET ALL THE POSSIBLE COMBINATIONS OF ALL THE PARAMETERS

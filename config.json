@@ -31,7 +31,11 @@
   # Type of the host that batcher will run at
   # Possible values are (LocalHost, GridEngine)
   # Depending on the host type, several parameters are needed
-  "host"    :  { "type"      : "LocalHost"},
+  "host"  :  { "type"      : "Slurm",
+               "account"   : "bank name",
+               "partition" : "queue or partition name"},
+
+  #"host"    :  { "type"      : "LocalHost"},
   #"host"    :  { "type"      : "GridEngine",
   #               "queue"     : "huge,nodes2014=1"},
 

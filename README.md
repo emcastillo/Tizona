@@ -53,6 +53,23 @@ The following line launchs the two experiments and combines them in packs togeth
 $ python launch.py --file experiments/example1.json experiments/example2.json 
 ```
 
+#Packing and batching
+
+Multiple Experiments can be packed in one or few jobs by using the --pack-params and --pack-size options
+
+When using --pack-params, supply a list of params name as specified in the experiments json params field
+and experiments with the the same values for those params will be coalesced in the same pack.
+
+To control the maximum number of experiments per job --pack-size is used. This argument can be use alone or in
+conjunction with --pack-size
+
+An example where we want to pack several experiments according to the number of nodes they need, and with a maximum
+of 50 experiments per pack
+
+```
+$ python launch.py --file experiments/example1.json experiments/example2.json --pack-params nodes --pack-size 50
+```
+
 ## Collecting Job Results
 
 CSV files can be obtained with the stats values defined through the models/model/stats.py class
@@ -68,4 +85,28 @@ SQL queries are allowed to the csv output by passing a query along
 $ python csv.py --file experiments/examples*json --csv-params nmess comp --csv-stats time --csv-out output.csv --csv-query "SELECT * from output"
 ```
 
+Complex SQL queries involving other files can be done by using the --csv-extra argument. The SQL will be able to use csv data stored in other files
+by using join clausules or subqueries
+
+```
+$ python csv.py --file experiments/examples*json --csv-params nmess comp --csv-stats time --csv-out output.csv --csv-extra other_data.csv --csv-query "SELECT * from output INNER JOIN other_data ON output.param = other_data.param"
+```
+
+## Customize some Tizona aspects
+
+# Rerunning experiments that failed
+
+Tizona detects if an experiment was already run by looking if its stdout file was created.
+Should you want to add a different functionality such as re-run if an error happened or re-run until a certain
+algorithmic condition is met you can edit the models/base/model.py is_executed Job method.
+
+You can even create a new model under the models directory
+
+# Parsing job statistics for CSV generation
+
+Right now Tizona can only work with time as an statistic as long as the binary run prints a line "time x" on its output
+models/base/stats.py file can be modified to support user defined stats, a dictionary should be populated with the stat names
+and values to be read when generating the csv results file.
+
+Eventually we will provide a standard results output to be automatically detected by Tizona.
 

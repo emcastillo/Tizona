@@ -49,7 +49,7 @@ def job_factory(experiment, param_sample, job_id, config):
         list : list of Job objects
     """
     jobs = []
-    job= Job(experiments,param_sample, job_id, config)
+    job= Job(experiment,param_sample, job_id, config)
 
     return [job]
 
@@ -77,6 +77,111 @@ def process_params(experiment, args):
     """
     pass
 
+class PackedJob(object):
+    """
+    When experiments are packed and batched this class holds the sub-set of experiments
+    and allows the host to access and run multiple experiments in a single job
+    
+    This class is used as a proxy to decouple the job type wether is packed or not from the host
+
+    Contributed by LLNL 
+    """
+    class DifferentParamsException(Exception):
+        pass
+
+    def __init__(self, pack_id, pack):
+        """
+        Args/Attributes:
+            pack_id (int) : id for the current pack
+            pack (list of experiment) : experiments the pack holds
+        """
+        self.pack = pack
+        self.pack_id = pack_id
+
+    def get_cmd_line(self):
+        """
+        Get the code to be executed by this batch,
+        for each experiment we set the environment and change the directory
+        according to the invidual needs
+        Returns:
+            str : body of the job with the cmdlines for all the experiments
+        """
+        code = ''        
+        for exp in self.pack:
+            #Load the specific job environment
+            code += exp.get_env()+'\n'
+            #We need to go to the app_dir 
+            code += 'cd '+exp.get_app_dir()+'\n'
+            # Do the stdout redirection here
+            # This is a packed job
+            code += exp.get_cmd_line() +' > '+exp.get_stdout()+' 2>&1\n'
+
+        return code
+
+    def get_name(self):
+        """
+        Return a PACK name, there is no point on returning the name of a specific
+        experiment.
+
+        Returns:
+            str : experiment name
+        """
+        lpack_name = self.pack[0].get_pack_name() 
+        for exp in self.pack[1:]:
+            cpack_name = exp.get_pack_name()
+            if lpack_name != cpack_name:
+                raise DifferentParamsException('Expected %s pack name, saw %s'%(lpack_name,cpack_name))
+
+        return lpack_name+'_%d'%self.pack_id
+
+    def get_stdout(self):
+        """
+        This is the individual stdout for the PACK, each in experiment
+        gets its own stdout according to their name
+
+        Return:
+            str : stdout file
+        """
+        # This is the GLOBAL out, not the individual exps
+        return self.get_name()+'.out'
+
+    def get_param(self, param):
+        """
+        Gets the instance value of a experiment specified param.
+        All jobs in the pack MUST have the same param value
+        
+        Args:
+            str : param name as specified in the params section of the experiments json
+        Returns:
+            str : instantiated value of the param
+        """
+        # Ensure that all the experiments in the pack share the same value of this param
+        lparam = self.pack[0].get_param(param)        
+        for exp in self.pack[1:]:
+            cparam = exp.get_param(param)
+            if lparam != cparam:
+                raise DifferentParamsException('Expected %s param, saw %s'%(lparam,cparam))
+
+        return lparam 
+
+    def get_env(self):
+        # Packed experiments do not have a global env setting
+        # They set the environment before launching each experiment
+        return '\n'
+
+    def get_wall_time(self):
+        # Return one of the wall times
+        # TODO: make it to return the sum?
+        return self.pack[0].get_wall_time()
+
+    def get_app_dir(self):
+        """
+        There is no app dir for  packed jobs.
+        The dir is changed before each run.
+        Returns:
+            str : Empty string
+        """
+        return ''
 
 class Job(object):
     """
@@ -156,7 +261,8 @@ class Job(object):
             str : self.experiment['name'] with the placeholders
                     replaced by the values in the param sample
         """
-        return self.experiment['name'] % self.param_sample
+        return (self.experiment['name'] % self.param_sample).replace(" ", "_")
+
     
     def get_working_dir(self):
         """
@@ -217,6 +323,17 @@ class Job(object):
             str : path to the file where the stderr will be stored
         """
         return os.path.join(self.get_working_dir(),self.get_name()+'.err')
+
+    def get_app_dir(self):
+        return self.experiment['app_dir']
+
+    def get_wall_time(self):
+        if 'wall_time' in self.experiment:
+            return self.experiment['wall_time']
+        return '01:00:00'
+
+    def get_pack_name(self):
+        return self.experiment['pack_name']
 
     def is_executed(self):
         """
