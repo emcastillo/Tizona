@@ -9,7 +9,7 @@ Tizona allows users to specify their set of experiments in a single
 json file and it automatically generates and submits the corresponding 
 jobs to the cluster batch system.
 
-Batches is being developed at the Barcelona Supercomputing Center.
+Tizona is being developed at the Barcelona Supercomputing Center.
 
 ## Using Tizona with your application
 
