@@ -31,6 +31,7 @@ from utils import files
 import subprocess
 from collections import defaultdict
 import numpy as np
+import os.path
 
 class Stats(object):
     """
@@ -50,7 +51,7 @@ class Stats(object):
         Attributes:
             stats (dict) : holds the readed values from the job stdout
         """
-        self.stats = __self.read_stats(job)
+        self.stats = self.__read_stats(job)
 
     def __read_stats(self, job):
         """
@@ -63,8 +64,10 @@ class Stats(object):
             dict : contains the parsed stats for the job
         """
         stats = defaultdict(list)
+        file_path = os.path.expanduser(job.get_stdout())
+        file_path = os.path.expandvars(file_path)
         try:
-            with open(job.get_stdout(),'r') as f:
+            with open(file_path,'r') as f:
                 for line in f:
                     tokens = line.split()
                     if 'Time' in line:
