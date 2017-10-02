@@ -50,8 +50,8 @@ class LocalHost(Host):
                                "sim_out"  : job.get_stdout()}
 
 
-        f=open('%s.job'%job.get_name(), 'w')
+        f=open(job.get_job_script_path(), 'w')
         f.write(batchcode)
         f.close()
         
-        os.system("bash %s.job"%job.get_name())
+        os.system("bash %s"%job.get_job_script_path())

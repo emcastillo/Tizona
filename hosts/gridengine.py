@@ -55,8 +55,8 @@ class GridEngine(Host):
                                    "name"     : job.get_name(), 
                                    "sim_out"  : job.get_stdout()}
 
-        f=open('ge.job', 'w')
+        f=open(job.get_job_script_path(), 'w')
         f.write(batchcode)
         f.close()
 	
-        os.system("sleep 0.5 && qsub -l %(queue)s ge.job"%self.config)
+        os.system(("sleep 0.5 && qsub -l %(queue)s "+job.get_job_script_path())%self.config)

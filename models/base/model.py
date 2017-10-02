@@ -143,7 +143,7 @@ class PackedJob(object):
             str : stdout file
         """
         # This is the GLOBAL out, not the individual exps
-        return self.get_name()+'.out'
+        return self.get_name()+'.job'
 
     def get_param(self, param):
         """
@@ -182,6 +182,13 @@ class PackedJob(object):
             str : Empty string
         """
         return ''
+
+    def get_job_script_path(self):
+        """
+        Returns:
+            str : path to the batch script with all the experiments
+        """
+        return self.get_name()
 
 class Job(object):
     """
@@ -326,6 +333,13 @@ class Job(object):
 
     def get_app_dir(self):
         return self.experiment['app_dir']
+
+    def get_job_script_path(self):
+        """
+        Returns:
+            str : path to where the batch script containing the job is stored
+        """
+        return os.path.join(self.self.get_working_dir(),self.get_name()+'.job')
 
     def get_wall_time(self):
         if 'wall_time' in self.experiment:

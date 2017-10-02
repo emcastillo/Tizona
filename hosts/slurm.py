@@ -30,10 +30,10 @@ class Slurm(Host):
                                    "wall_time": job.get_wall_time(),
                                    "sim_out"  : job.get_stdout()}
 
-        f=open('%s.job'%job.get_name(), 'w')
+        f=open(job.get_job_script_path(), 'w')
         f.write(batchcode)
         f.close()
-        output = subprocess.check_output("sleep 0.1 && sbatch %s.job"%job.get_name(), shell=True)
+        output = subprocess.check_output("sleep 0.1 && sbatch %s"%job.get_job_script_path(), shell=True)
         # Return the job id
         return output.split()[-1]
 
