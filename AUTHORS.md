@@ -1,7 +1,7 @@
-Batcher is being developed at the Barcelona Supercomputing Center
-but it is open for contributions.
+Tizona is being developed at the Barcelona Supercomputing Center
+and open for contributions.
 
-This file lists contributors to Batcher development
+Contributors to Tizona development
 
 * E. Castillo   (Barcelona Supercomputing Center)
 * L. Alvarez    (Barcelona Supercomputing Center)
@@ -10,3 +10,5 @@ This file lists contributors to Batcher development
 * K. Nakayama   (The University of Tokyo)
 * M. Misono     (The University of Tokyo)
 * I. Perez      (Universidad de Cantabria)
+* N. Jain       (Lawrence Livermore National Laboratory)
+* A. Bathele    (Lawrence Livermore National Laboratory)
