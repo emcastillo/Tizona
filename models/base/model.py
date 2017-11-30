@@ -286,9 +286,9 @@ class Job(object):
 
         wd_name = self.experiment['working_dir'] % self.param_sample
         wd_path = os.path.join(self.config['OUT_DIR'], wd_name)
-        dir = os.path.expandvars(os.path.dirname(wd_path))
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        wd_path = os.path.expandvars(os.path.dirname(wd_path))
+        if not os.path.exists(wd_path):
+            os.makedirs(wd_path)
         return wd_path
    
     def get_graph_name(self):
@@ -339,7 +339,7 @@ class Job(object):
         Returns:
             str : path to where the batch script containing the job is stored
         """
-        return os.path.join(self.self.get_working_dir(),self.get_name()+'.job')
+        return os.path.join(self.get_working_dir(),self.get_name()+'.job')
 
     def get_wall_time(self):
         if 'wall_time' in self.experiment:
