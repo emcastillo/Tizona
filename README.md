@@ -51,7 +51,7 @@ The --file admits multiple files at once:
 $ python launch.py --file experiments/example1.json experiments/example2.json 
 ```
 
-###Packing and batching
+### Packing and batching
 
 Multiple Experiments can be packed in one or few jobs by using the --pack-params and --pack-size options
 
@@ -113,8 +113,8 @@ Here we add a stat called time whose value is retrieved from the stdout of each 
 
 The following placeholders will be replaced with the experiment specific values:
 
-*stdout
-*working_dir
-*name
-*app_name
+* stdout
+* working_dir
+* name
+* app_name
 
