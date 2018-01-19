@@ -302,7 +302,7 @@ class Job(object):
 
         wd_name = self.experiment['working_dir'] % self.param_sample
         wd_path = os.path.join(self.config['OUT_DIR'], wd_name)
-        wd_path = os.path.expandvars(os.path.dirname(wd_path))
+        wd_path = os.path.expandvars(wd_path)
         if not os.path.exists(wd_path):
             os.makedirs(wd_path)
         return wd_path
