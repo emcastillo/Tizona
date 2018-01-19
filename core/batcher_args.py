@@ -41,6 +41,10 @@ class BatcherArgs :
                             help="Override the model defined in the json file", required = False, 
                             default = None)
 
+        parser.add_argument('-c','--config', type=str, 
+                            help="Use the specified config json file", required = False, 
+                            default = 'config.json')
+
         parser.add_argument('-r','--remote', type=str, 
                             help="launch the files remotely", required = False, 
                             default = None)

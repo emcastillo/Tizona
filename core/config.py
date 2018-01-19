@@ -53,8 +53,8 @@ class Config(object):
             model_args             : unparsed remaining cmdline params
             job_model              : imported model file from the job module
         """
-        self.config_params = read_json('config.json')
         self.args,self.model_args = args.parse_args()
+        self.config_params = read_json(self.args.config)
         self.job_model = None
 
 
