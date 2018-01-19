@@ -111,7 +111,8 @@ class PackedJob(object):
             #Load the specific job environment
             code += exp.get_env()+'\n'
             #We need to go to the app_dir 
-            code += 'cd '+exp.get_app_dir()+'\n'
+            if exp.get_app_dir():
+                code += 'cd '+exp.get_app_dir()+'\n'
             # Do the stdout redirection here
             # This is a packed job
             code += exp.get_cmd_line() +' > '+exp.get_stdout()+' 2>&1\n'
@@ -348,7 +349,9 @@ class Job(object):
         return os.path.join(self.get_working_dir(),self.get_name()+'.err')
 
     def get_app_dir(self):
-        return self.experiment['app_dir']
+        if 'app_dir' in self.experiment:
+            return self.experiment['app_dir']
+        return None
 
     def get_job_script_path(self):
         """
