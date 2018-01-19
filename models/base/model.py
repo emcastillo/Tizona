@@ -143,7 +143,7 @@ class PackedJob(object):
             str : stdout file
         """
         # This is the GLOBAL out, not the individual exps
-        return self.get_name()+'.job'
+        return self.get_name()+'.out'
 
     def get_param(self, param):
         """
@@ -188,7 +188,7 @@ class PackedJob(object):
         Returns:
             str : path to the batch script with all the experiments
         """
-        return self.get_name()
+        return self.get_name()+'.job'
 
 class Job(object):
     """
