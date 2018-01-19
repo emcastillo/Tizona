@@ -70,7 +70,29 @@ $ python launch.py --file experiments/example1.json experiments/example2.json --
 
 ## Collecting Job Results
 
-CSV files can be created with the stats values defined through the models/model/stats.py class.
+### Parsing job statistics for CSV generation
+
+The stats field on the experiment configuration allows to specify bash commands to retrieve metrics from the
+output files.
+
+```
+    "stats" : {
+        "time" : "grep Time %(stdout)s | rev | cut -d' ' -f1 | rev"
+    }
+```
+Here we add a stat called time whose value is retrieved from the stdout of each experiment using that bash command.
+
+The following placeholders will be replaced with the experiment specific values:
+
+* stdout
+* working_dir
+* name
+* app_dir
+
+### Create a CSV with all the experiments 
+
+CSV files can be created with the stats values defined in the json "stats" field as it will be described later.
+
 The following line reads all the files containing experiments and creates a csv file organized by the nmess, comp params with the stat time values:
 
 ```
@@ -97,24 +119,4 @@ $ python csv.py --file experiments/examples*json --csv-params nmess comp --csv-s
 Tizona detects if an experiment was already run by looking if its stdout file was created.
 It is possible to add a different functionality such as re-run if an error happened or re-run until a certain
 algorithmic condition is met you can edit the models/base/model.py is_executed Job method.
-
-### Parsing job statistics for CSV generation
-
-The stats field on the experiment configuration allows to specify bash commands to retrieve metrics from the
-output files.
-
-```
-    "stats" : {
-        "time" : "grep Time %(stdout)s | rev | cut -d' ' -f1 | rev"
-    }
-```
-
-Here we add a stat called time whose value is retrieved from the stdout of each experiment using that bash command.
-
-The following placeholders will be replaced with the experiment specific values:
-
-* stdout
-* working_dir
-* name
-* app_name
 
