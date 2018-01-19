@@ -117,8 +117,8 @@ class PackedJob(object):
             code += exp.get_cmd_line() +' > '+exp.get_stdout()+' 2>&1\n'
 
         return code
-
-    def get_name(self):
+    
+    def get_pack_name(self):
         """
         Return a PACK name, there is no point on returning the name of a specific
         experiment.
@@ -132,7 +132,15 @@ class PackedJob(object):
             if lpack_name != cpack_name:
                 raise DifferentParamsException('Expected %s pack name, saw %s'%(lpack_name,cpack_name))
 
-        return lpack_name+'_%d'%self.pack_id
+        return lpack_name
+
+    def get_name(self):
+        """
+        Give a specific name to this pack using the internal id
+        Returns:
+            str : experiment name
+        """
+        return self.get_pack_name()+'_%d'%self.pack_id
 
     def get_stdout(self):
         """
@@ -143,7 +151,11 @@ class PackedJob(object):
             str : stdout file
         """
         # This is the GLOBAL out, not the individual exps
-        return self.get_name()+'.out'
+        wd_path = os.path.join(self.config['OUT_DIR'], self.get_pack_name())
+        wd_path = os.path.expandvars(os.path.dirname(wd_path))
+        if not os.path.exists(wd_path):
+            os.makedirs(wd_path)
+        return os.path.join(wd_path,self.get_name()+'.out')
 
     def get_param(self, param):
         """
@@ -188,7 +200,11 @@ class PackedJob(object):
         Returns:
             str : path to the batch script with all the experiments
         """
-        return self.get_name()+'.job'
+        wd_path = os.path.join(self.config['OUT_DIR'], self.get_pack_name())
+        wd_path = os.path.expandvars(os.path.dirname(wd_path))
+        if not os.path.exists(wd_path):
+            os.makedirs(wd_path)
+        return os.path.join(wd_path,self.get_name()+'.job')
 
 class Job(object):
     """
