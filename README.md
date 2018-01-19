@@ -100,9 +100,21 @@ algorithmic condition is met you can edit the models/base/model.py is_executed J
 
 ### Parsing job statistics for CSV generation
 
-Right now Tizona can only work with time as an statistic as long as the binary run prints a line "time x" on its output.
-models/base/stats.py file can be modified to support user defined stats, a dictionary should be populated with the stat names
-and values to be read when generating the csv results file.
+The stats field on the experiment configuration allows to specify bash commands to retrieve metrics from the
+output files.
 
-Eventually we will provide a standard results output to be automatically detected by Tizona.
+```
+    "stats" : {
+        "time" : "grep Time %(stdout)s | rev | cut -d' ' -f1 | rev"
+    }
+```
+
+Here we add a stat called time whose value is retrieved from the stdout of each experiment using that bash command.
+
+The following placeholders will be replaced with the experiment specific values:
+
+*stdout
+*working_dir
+*name
+*app_name
 

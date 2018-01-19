@@ -36,12 +36,9 @@ import os.path
 class Stats(object):
     """
     Parses and stores the relevant stats of the job
-
-    This moduel right now supports the time stat.
-    The executed job should have print a line with
-    the format 'Time xxx' in the stdout file
     
-    If multiple lines are defined, the stat value will be the average
+    This module call the bash statement provided in the config.json
+    "stats" : {"stat_name" : "grep ..."} to get the value for the stat 
     """
 
     def __init__(self, job):
@@ -64,16 +61,19 @@ class Stats(object):
             dict : contains the parsed stats for the job
         """
         stats = defaultdict(list)
-        file_path = os.path.expanduser(job.get_stdout())
-        file_path = os.path.expandvars(file_path)
-        try:
-            with open(file_path,'r') as f:
-                for line in f:
-                    tokens = line.split()
-                    if 'Time' in line:
-                        stats['time'].append(tokens[-1])
-        except:
-            stats['time'].append('0.0')
+
+        placeholders = {}
+        placeholders['stdout'] = job.get_stdout()
+        placeholders['working_dir'] = job.get_working_dir()
+        placeholders['app_dir'] = job.get_app_dir()
+        placeholders['name'] = job.get_name()
+
+        cmds = job.get_stats()
+        for stat in cmds:
+            try:
+                stats[stat].append(subprocess.check_output(cmds[stat]%placeholders, shell=True))
+            except:
+                stats[stat].append('0.0')
         return stats
 
     def get_stat(self, stat):

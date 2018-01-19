@@ -64,6 +64,11 @@
         "size_Y": [8192,4096,4096],
         #This is just to run several experiments per data point
         "runs"  : "py:range(5)"
+    },
+
+    #Add bash cmdlines to retrieve the bash value for every experiment
+    "stats" : {
+        "time" : "grep Time %(stdout)s | rev | cut -d' ' -f1 | rev"
     }
 }
 

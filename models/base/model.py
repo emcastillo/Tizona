@@ -267,6 +267,7 @@ class Job(object):
         Returns:
             str : all the commands the script will execute
         """
+        #TODO allow to use solved placed holders such as working_dir or name
         cmd_line =  self.__get_exp_list_as_line('bin')%self.param_sample
         return cmd_line
             
@@ -366,7 +367,19 @@ class Job(object):
         return '01:00:00'
 
     def get_pack_name(self):
+        """
+        Returns:
+            str: name of the pack the experiment belongs to
+        """
         return self.experiment['pack_name']
+
+    def get_stats(self):
+        """
+        Returns:
+            dict: stats with names and bash cmdlines to get the value
+                  as written in the json config file
+        """
+        return self.experiment['stats']
 
     def is_executed(self):
         """
