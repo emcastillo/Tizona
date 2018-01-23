@@ -152,7 +152,7 @@ class PackedJob(object):
             str : stdout file
         """
         # This is the GLOBAL out, not the individual exps
-        wd_path = os.path.join(self.config['OUT_DIR'], self.get_pack_name())
+        wd_path = os.path.join(self.pack[0].config['OUT_DIR'], self.get_pack_name())
         wd_path = os.path.expandvars(os.path.dirname(wd_path))
         if not os.path.exists(wd_path):
             os.makedirs(wd_path)
@@ -201,7 +201,7 @@ class PackedJob(object):
         Returns:
             str : path to the batch script with all the experiments
         """
-        wd_path = os.path.join(self.config['OUT_DIR'], self.get_pack_name())
+        wd_path = os.path.join(self.pack[0].config['OUT_DIR'], self.get_pack_name())
         wd_path = os.path.expandvars(os.path.dirname(wd_path))
         if not os.path.exists(wd_path):
             os.makedirs(wd_path)

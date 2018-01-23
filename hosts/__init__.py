@@ -35,6 +35,7 @@ and to allow a diversity of hosts
 
 TODO: Rename hosts to job runners
 """
+import os 
 
 def current_host(config):
     hosts={ }
@@ -49,7 +50,7 @@ def current_host(config):
     h_config =  config.get_global_config()['host']
     host_class = h_config['type']
     #Iterate through all the members of this class
-    module_names = [name for _, name, _ in pkgutil.iter_modules([__name__])]
+    module_names = [name for _, name, _ in pkgutil.iter_modules([os.path.dirname(__file__)])]
     for mod in module_names:
         importlib.import_module(__name__+'.'+mod)
 
