@@ -2,7 +2,7 @@
 
 ## What is Tizona
 
-Tizona is a tool for launching experiments in Kubernetes or clusters
+Tizona is a tool for launching experiments in clusters
 with a job manager and collect their results.
 
 Tizona allows users to specify their set of experiments in a single 
