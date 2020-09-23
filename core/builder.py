@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -39,6 +39,7 @@ class GlobDesc(object):
     Very useful when generating results
     of several global descriptions
     """
+
     def __init__(self, json, exps):
         """
         Args / Attributes:
@@ -48,12 +49,14 @@ class GlobDesc(object):
         self.json = json
         self.exps = exps
 
-class JobBuilder(object): 
+
+class JobBuilder(object):
     """
     This class is in charge of parsing the input json files and
     obtain all the possible parameter combinations in order to
     create the needed Job objects of the corresponding module.
     """
+
     def __init__(self, config):
         """
         Attributes :
@@ -66,7 +69,7 @@ class JobBuilder(object):
         self.global_desc = deque([])
 
     def build(self, files):
-        """ 
+        """
         Args:
             files (list of str) In : files to read the experiments from
         Returns:
@@ -80,7 +83,7 @@ class JobBuilder(object):
         """ Returns the list of global description files """
         return self.global_desc
 
-    def __parse_exp_files(self, files): 
+    def __parse_exp_files(self, files):
         """
         Reads all the json files and populates the self.experiments list
         with Job objects
@@ -89,13 +92,13 @@ class JobBuilder(object):
             files (list of str) In : files to read the experiments from
         """
         for json_file_path in files:
-            print('Reading ',json_file_path)
+            print("Reading ", json_file_path)
             exp_json = read_json(json_file_path)
             # This is a global exps json
-            if ('sim_files' in exp_json):
-                # For results collections we want to know which jobs 
+            if "sim_files" in exp_json:
+                # For results collections we want to know which jobs
                 # where obtained through global descriptions
-                exps = self.__parse_exp_files(exp_json['sim_files'])
+                exps = self.__parse_exp_files(exp_json["sim_files"])
                 if exps:
                     self.global_desc.append(GlobDesc(exp_json, exps))
             else:
@@ -109,12 +112,12 @@ class JobBuilder(object):
         Args:
            json (dict) In : one of the files specified in --files cmd arg already parsed as a json file
         """
-        # The load model will process the parameters and 
+        # The load model will process the parameters and
         # tune the json dict accordingly
-        job_module = self.config.load_model(json, json['model'])
-        sampler = GridSampler(json, job_module, self.config.get_module_config(json['model']))
+        job_module = self.config.load_model(json, json["model"])
+        sampler = GridSampler(
+            json, job_module, self.config.get_module_config(json["model"])
+        )
         exps = sampler.build()
         self.experiments.extend(exps)
         return exps
-
-

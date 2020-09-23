@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,7 +30,7 @@
 import os
 from hosts.host import Host
 
-grideng_script=r"""#!/bin/bash
+grideng_script = r"""#!/bin/bash
 # Launch script for clusters using gridengine
 #
 # Job name
@@ -46,17 +46,22 @@ grideng_script=r"""#!/bin/bash
 %(code)s } >%(sim_out)s 2>&1
 """
 
+
 class GridEngine(Host):
+    def run_job(self, job):
 
-    def run_job(self,job):
+        batchcode = grideng_script % {
+            "code": job.get_cmd_line(),
+            "env": job.get_env(),
+            "name": job.get_name(),
+            "sim_out": job.get_stdout(),
+        }
 
-        batchcode= grideng_script%{"code"     : job.get_cmd_line(), 
-                                   "env"      : job.get_env(),
-                                   "name"     : job.get_name(), 
-                                   "sim_out"  : job.get_stdout()}
-
-        f=open(job.get_job_script_path(), 'w')
+        f = open(job.get_job_script_path(), "w")
         f.write(batchcode)
         f.close()
-	
-        os.system(("sleep 0.5 && qsub -l %(queue)s "+job.get_job_script_path())%self.config)
+
+        os.system(
+            ("sleep 0.5 && qsub -l %(queue)s " + job.get_job_script_path())
+            % self.config
+        )

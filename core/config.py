@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,10 +27,11 @@
 #
 # Authors: E. Castillo (Barcelona Supercomputing Center)
 
-#Configure according your host
+# Configure according your host
 from collections import defaultdict
 from utils.files import read_json
 from utils import loaders
+
 
 class Config(object):
     """
@@ -45,27 +46,27 @@ class Config(object):
 
     TODO: This class must be rethink, too many responsibilities
     """
+
     def __init__(self, args):
         """
-        Attributes: 
+        Attributes:
             config_params (dict)   : the parsed config.json file
-            args (argparse object) : parsed cmdline params 
+            args (argparse object) : parsed cmdline params
             model_args             : unparsed remaining cmdline params
             job_model              : imported model file from the job module
         """
-        self.args,self.model_args = args.parse_args()
+        self.args, self.model_args = args.parse_args()
         self.config_params = read_json(self.args.config)
         self.job_model = None
-
 
     def get_global_config(self):
         """ Returns the entire config.json file """
         return self.config_params
-    
+
     def get_module_config(self, module):
         """ Returns the module section of the config.json file """
         return self.config_params[module]
-   
+
     def get_args(self):
         """ Returns the batcher args object """
         return self.args
@@ -73,8 +74,8 @@ class Config(object):
     def get_job_model(self):
         """ Returns the loaded file containing the Job class """
         return self.job_model
-      
-    #TODO: This two methods are UGLY replace this with a more elegant solution
+
+    # TODO: This two methods are UGLY replace this with a more elegant solution
     def get_model(self, pclass):
         """
         Imports files in the job module packages
@@ -82,12 +83,12 @@ class Config(object):
 
         Args:
            pclass (str) In : value can be (model, stats)
-        """ 
-        if not pclass in ('model','stats'):
-            raise UnknownModelClass('Class should be model or stats')
+        """
+        if not pclass in ("model", "stats"):
+            raise UnknownModelClass("Class should be model or stats")
 
-        model_pkg = 'models.'+self.model_name+'.'+pclass
-        module=loaders.load_module(model_pkg)
+        model_pkg = "models." + self.model_name + "." + pclass
+        module = loaders.load_module(model_pkg)
         return module
 
     def load_model(self, experiment, model_name):
@@ -95,25 +96,24 @@ class Config(object):
         Loads the job_module.model package
 
         Args:
-           experiment (dict) : json file of the experiment that requires this model 
+           experiment (dict) : json file of the experiment that requires this model
         Returns:
-           pkg class of job_module.model 
+           pkg class of job_module.model
         """
         # Don't load twice
-        if self.job_model: 
+        if self.job_model:
             return self.job_model
 
         if self.args.use_model:
             model_name = self.args.use_model
 
         self.model_name = model_name
-        self.job_model=self.get_model('model')
-        
-        #Parse the module specific args
-        if len(self.model_args): 
+        self.job_model = self.get_model("model")
+
+        # Parse the module specific args
+        if len(self.model_args):
             model_parser = argparse.ArgumentParser(self.model_args)
             self.job_model.define_args(model_parser)
             self.job_model.process_params(experiment, model_parser.parse_args())
 
-        return self.job_model 
-
+        return self.job_model

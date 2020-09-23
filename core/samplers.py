@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -37,6 +37,7 @@ class Sampler(object):
     Base abstract class for
     implement parameter searchers
     """
+
     def __init__(self, experiment, job_module, job_module_config):
         """
         Args / Attributes :
@@ -44,7 +45,7 @@ class Sampler(object):
             job_module (Module pkg Class) : The Job module pkg class object used to instantiate Jobs
             job_module_config     (dict) : The config parameters (config.json) for the job_module
         """
-        #global dataset
+        # global dataset
         self.experiment = defaultdict(str)
         self.experiment.update(experiment)
         self.jobs = deque([])
@@ -53,7 +54,7 @@ class Sampler(object):
 
     def sample(self):
         """
-        Get one combination of all the experiment[params] dict possible ones 
+        Get one combination of all the experiment[params] dict possible ones
         """
         for param_set in self.searcher:
             yield param_set
@@ -67,8 +68,13 @@ class Sampler(object):
         """
         job_id = 0
         for param_set in self.sample():
-            self.jobs.extend(self.job_module.job_factory(self.experiment, param_set, job_id, self.job_module_config))
+            self.jobs.extend(
+                self.job_module.job_factory(
+                    self.experiment, param_set, job_id, self.job_module_config
+                )
+            )
         return self.jobs
+
 
 class GridSampler(Sampler):
     """
@@ -77,14 +83,18 @@ class GridSampler(Sampler):
     defined as an array in the params section of the experiments
     json
     """
+
     def __init__(self, experiment, args, job_module_config):
         super(self.__class__, self).__init__(experiment, args, job_module_config)
         # pre-format the experiment dict
         # Sklearn needs all the params to be in a  list for the grid to work
         # properly
-        for param in experiment['params']:
-            if type(experiment['params'][param]) is not list:
-                experiment['params'][param] = [experiment['params'][param] ]
-        inputs = experiment['params']
+        for param in experiment["params"]:
+            if type(experiment["params"][param]) is not list:
+                experiment["params"][param] = [experiment["params"][param]]
+        inputs = experiment["params"]
 
-        self.searcher = (dict(zip(inputs.keys(), values)) for values in itertools.product(*inputs.values()))
+        self.searcher = (
+            dict(zip(inputs.keys(), values))
+            for values in itertools.product(*inputs.values())
+        )

@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,6 +33,7 @@ import os
 Binary File Runner
 """
 
+
 def job_factory(experiment, param_sample, job_id, config):
     """
     Instantiate one or multiple jobs depending on the
@@ -40,7 +41,7 @@ def job_factory(experiment, param_sample, job_id, config):
 
     Args:
         experiment (dict)   In : contains the whole experiment.json
-        param_sample (dict) In : contains a sampled params section of the 
+        param_sample (dict) In : contains a sampled params section of the
                                  experiment, this means one of all the possible
                                  combinations
         job_id (int) In        : The id of the job
@@ -49,19 +50,21 @@ def job_factory(experiment, param_sample, job_id, config):
         list : list of Job objects
     """
     jobs = []
-    job= Job(experiment,param_sample, job_id, config)
+    job = Job(experiment, param_sample, job_id, config)
 
     return [job]
 
+
 def define_args(args):
-    """ 
+    """
     Add custom cmdline arguments passed
 
     Args:
         args (argparse obj) InOut : the argparse object where the new parameters will be added
-    
+
     """
     pass
+
 
 def process_params(experiment, args):
     """
@@ -77,15 +80,17 @@ def process_params(experiment, args):
     """
     pass
 
+
 class PackedJob(object):
     """
     When experiments are packed and batched this class holds the sub-set of experiments
     and allows the host to access and run multiple experiments in a single job
-    
+
     This class is used as a proxy to decouple the job type wether is packed or not from the host
 
-    Contributed by LLNL 
+    Contributed by LLNL
     """
+
     class DifferentParamsException(Exception):
         pass
 
@@ -106,19 +111,19 @@ class PackedJob(object):
         Returns:
             str : body of the job with the cmdlines for all the experiments
         """
-        code = ''        
+        code = ""
         for exp in self.pack:
-            #Load the specific job environment
-            code += exp.get_env()+'\n'
-            #We need to go to the app_dir 
+            # Load the specific job environment
+            code += exp.get_env() + "\n"
+            # We need to go to the app_dir
             if exp.get_app_dir():
-                code += 'cd '+exp.get_app_dir()+'\n'
+                code += "cd " + exp.get_app_dir() + "\n"
             # Do the stdout redirection here
             # This is a packed job
-            code += exp.get_cmd_line() +' > '+exp.get_stdout()+' 2>&1\n'
+            code += exp.get_cmd_line() + " > " + exp.get_stdout() + " 2>&1\n"
 
         return code
-    
+
     def get_pack_name(self):
         """
         Return a PACK name, there is no point on returning the name of a specific
@@ -127,11 +132,13 @@ class PackedJob(object):
         Returns:
             str : experiment name
         """
-        lpack_name = self.pack[0].get_pack_name() 
+        lpack_name = self.pack[0].get_pack_name()
         for exp in self.pack[1:]:
             cpack_name = exp.get_pack_name()
             if lpack_name != cpack_name:
-                raise DifferentParamsException('Expected %s pack name, saw %s'%(lpack_name,cpack_name))
+                raise DifferentParamsException(
+                    "Expected %s pack name, saw %s" % (lpack_name, cpack_name)
+                )
 
         return lpack_name
 
@@ -141,7 +148,7 @@ class PackedJob(object):
         Returns:
             str : experiment name
         """
-        return self.get_pack_name()+'_%d'%self.pack_id
+        return self.get_pack_name() + "_%d" % self.pack_id
 
     def get_stdout(self):
         """
@@ -152,35 +159,37 @@ class PackedJob(object):
             str : stdout file
         """
         # This is the GLOBAL out, not the individual exps
-        wd_path = os.path.join(self.pack[0].config['OUT_DIR'], self.get_pack_name())
+        wd_path = os.path.join(self.pack[0].config["OUT_DIR"], self.get_pack_name())
         wd_path = os.path.expandvars(os.path.dirname(wd_path))
         if not os.path.exists(wd_path):
             os.makedirs(wd_path)
-        return os.path.join(wd_path,self.get_name()+'.out')
+        return os.path.join(wd_path, self.get_name() + ".out")
 
     def get_param(self, param):
         """
         Gets the instance value of a experiment specified param.
         All jobs in the pack MUST have the same param value
-        
+
         Args:
             str : param name as specified in the params section of the experiments json
         Returns:
             str : instantiated value of the param
         """
         # Ensure that all the experiments in the pack share the same value of this param
-        lparam = self.pack[0].get_param(param)        
+        lparam = self.pack[0].get_param(param)
         for exp in self.pack[1:]:
             cparam = exp.get_param(param)
             if lparam != cparam:
-                raise DifferentParamsException('Expected %s param, saw %s'%(lparam,cparam))
+                raise DifferentParamsException(
+                    "Expected %s param, saw %s" % (lparam, cparam)
+                )
 
-        return lparam 
+        return lparam
 
     def get_env(self):
         # Packed experiments do not have a global env setting
         # They set the environment before launching each experiment
-        return '\n'
+        return "\n"
 
     def get_wall_time(self):
         # Return one of the wall times
@@ -194,24 +203,26 @@ class PackedJob(object):
         Returns:
             str : Empty string
         """
-        return ''
+        return ""
 
     def get_job_script_path(self):
         """
         Returns:
             str : path to the batch script with all the experiments
         """
-        wd_path = os.path.join(self.pack[0].config['OUT_DIR'], self.get_pack_name())
+        wd_path = os.path.join(self.pack[0].config["OUT_DIR"], self.get_pack_name())
         wd_path = os.path.expandvars(os.path.dirname(wd_path))
         if not os.path.exists(wd_path):
             os.makedirs(wd_path)
-        return os.path.join(wd_path,self.get_name()+'.job')
+        return os.path.join(wd_path, self.get_name() + ".job")
+
 
 class Job(object):
     """
     Containes and provides methods to access
     all the relevant job parameters
     """
+
     def __init__(self, experiment, param_sample, job_id, config):
         """
         Initializes a job based on the general experiments description
@@ -220,7 +231,7 @@ class Job(object):
         Args/Attributes:
 
             experiment (dict)   In : contains the whole experiment.json
-            param_sample (dict) In : contains a sampled params section of the 
+            param_sample (dict) In : contains a sampled params section of the
                                      experiment, this means one of all the possible
                                      combinations
             job_id (int) In        : The id of the job
@@ -239,11 +250,11 @@ class Job(object):
         """
         pass
 
-    def __get_exp_list_as_line(self,key):
+    def __get_exp_list_as_line(self, key):
         """
         Given a key of the experiment file
         that contains a list, fuse the list
-        elements in a single string with line 
+        elements in a single string with line
         breaks.
 
         This does not work in params, just global experiment
@@ -258,27 +269,27 @@ class Job(object):
         """
         line = self.experiment[key]
         if type(line) is list:
-            line = '\n'.join(line)
-        # Substitute all the parameters in the bins cmd 
-        return (line)
-    
+            line = "\n".join(line)
+        # Substitute all the parameters in the bins cmd
+        return line
+
     def get_cmd_line(self):
         """
         Returns:
             str : all the commands the script will execute
         """
-        #TODO allow to use solved placed holders such as working_dir or name
-        cmd_line =  self.__get_exp_list_as_line('bin')%self.param_sample
+        # TODO allow to use solved placed holders such as working_dir or name
+        cmd_line = self.__get_exp_list_as_line("bin") % self.param_sample
         return cmd_line
-            
+
     def get_env(self):
         """
         Returns:
-            str : all the environment variables that should be 
+            str : all the environment variables that should be
                   set prior running the cmd line
         """
         # Load the modules and the environment if necessary
-        return self.__get_exp_list_as_line('env')
+        return self.__get_exp_list_as_line("env")
 
     def get_name(self):
         """
@@ -286,9 +297,8 @@ class Job(object):
             str : self.experiment['name'] with the placeholders
                     replaced by the values in the param sample
         """
-        return (self.experiment['name'] % self.param_sample).replace(" ", "_")
+        return (self.experiment["name"] % self.param_sample).replace(" ", "_")
 
-    
     def get_working_dir(self):
         """
         Returns the working dir for the experiment
@@ -302,13 +312,13 @@ class Job(object):
             str : path to the jobs working directory
         """
 
-        wd_name = self.experiment['working_dir'] % self.param_sample
-        wd_path = os.path.join(self.config['OUT_DIR'], wd_name)
+        wd_name = self.experiment["working_dir"] % self.param_sample
+        wd_path = os.path.join(self.config["OUT_DIR"], wd_name)
         wd_path = os.path.expandvars(wd_path)
         if not os.path.exists(wd_path):
             os.makedirs(wd_path)
         return wd_path
-   
+
     def get_graph_name(self):
         """
         Gets the name of the experiment used for represent it
@@ -318,8 +328,8 @@ class Job(object):
             str : self.experiment['graph_name'] with the placeholders
                     replaced by the values in the param sample
         """
-        return self.experiment['graph_name'] % self.param_sample
-    
+        return self.experiment["graph_name"] % self.param_sample
+
     def get_param(self, param):
         """
         Returns:
@@ -330,7 +340,7 @@ class Job(object):
     def get_config(self):
         """
         Returns:
-            config obj: The config parameters for this module as defined in 
+            config obj: The config parameters for this module as defined in
                       config.json
         """
         return self.config
@@ -340,18 +350,18 @@ class Job(object):
         Returns:
             str : path to the file where the stdout will be stored
         """
-        return os.path.join(self.get_working_dir(),self.get_name()+'.out')
+        return os.path.join(self.get_working_dir(), self.get_name() + ".out")
 
     def get_stderr(self):
         """
         Returns:
             str : path to the file where the stderr will be stored
         """
-        return os.path.join(self.get_working_dir(),self.get_name()+'.err')
+        return os.path.join(self.get_working_dir(), self.get_name() + ".err")
 
     def get_app_dir(self):
-        if 'app_dir' in self.experiment:
-            return self.experiment['app_dir']
+        if "app_dir" in self.experiment:
+            return self.experiment["app_dir"]
         return None
 
     def get_job_script_path(self):
@@ -359,19 +369,19 @@ class Job(object):
         Returns:
             str : path to where the batch script containing the job is stored
         """
-        return os.path.join(self.get_working_dir(),self.get_name()+'.job')
+        return os.path.join(self.get_working_dir(), self.get_name() + ".job")
 
     def get_wall_time(self):
-        if 'wall_time' in self.experiment:
-            return self.experiment['wall_time']
-        return '01:00:00'
+        if "wall_time" in self.experiment:
+            return self.experiment["wall_time"]
+        return "01:00:00"
 
     def get_pack_name(self):
         """
         Returns:
             str: name of the pack the experiment belongs to
         """
-        return self.experiment['pack_name']
+        return self.experiment["pack_name"]
 
     def get_stats(self):
         """
@@ -379,7 +389,7 @@ class Job(object):
             dict: stats with names and bash cmdlines to get the value
                   as written in the json config file
         """
-        return self.experiment['stats']
+        return self.experiment["stats"]
 
     def is_executed(self):
         """
@@ -387,4 +397,3 @@ class Job(object):
             bool : True when the stdout file already exists (the Job was executed)
         """
         return os.path.isfile(self.get_stdout())
-

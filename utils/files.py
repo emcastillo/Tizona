@@ -4,30 +4,32 @@ import sys
 import re
 import json
 
+
 def read_json(path, prefix=None):
     """
     Read a Json File a returns a dict
     It removes comments specified by # before parsing the file.
-   
+
     If the json file has a field with a string "py:..."
     it assumes that it is a python statement and evaluates it
-    Args: 
+    Args:
         path (str) In : path to the json file to load
 
     Returns:
         dict : dict with the json file in path contents
 
     """
-    with open(path,'r') as f:
-        filtered = re.sub(re.compile("#.*?\n" ) ,"" ,f.read())
-   
+    with open(path, "r") as f:
+        filtered = re.sub(re.compile("#.*?\n"), "", f.read())
+
     j_file = json.loads(filtered)
-    if prefix!=None and 'name' in j_file:
-        j_file['name'] = '%s%s'%(prefix,j_file['name'])
-    
-    #Some times the json might have python code for simplify legibility
+    if prefix != None and "name" in j_file:
+        j_file["name"] = "%s%s" % (prefix, j_file["name"])
+
+    # Some times the json might have python code for simplify legibility
     eval_json_python(j_file)
     return j_file
+
 
 def eval_json_python(j_file):
     """
@@ -40,15 +42,17 @@ def eval_json_python(j_file):
     for key in j_file:
         # TODO Add strings in list support
         if type(j_file[key]) is dict:
-             eval_json_python(j_file[key])
-        elif (type(j_file[key]) is str) and (j_file[key][0:3]=='py:'):
-             j_file[key] = eval(j_file[key][3:])
+            eval_json_python(j_file[key])
+        elif (type(j_file[key]) is str) and (j_file[key][0:3] == "py:"):
+            j_file[key] = eval(j_file[key][3:])
+
 
 class cd:
     """
     Context manager for changing the current working directory
     as seen in https://stackoverflow.com/questions/431684/how-do-i-cd-in-python
     """
+
     def __init__(self, newPath):
         self.newPath = os.path.expanduser(newPath)
         self.newPath = os.path.expandvars(self.newPath)
@@ -59,5 +63,3 @@ class cd:
 
     def __exit__(self, etype, value, traceback):
         os.chdir(self.savedPath)
-
-

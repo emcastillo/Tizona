@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -37,19 +37,22 @@ import config
 
 env.use_ssh_config = True
 
+
 def sync(host):
     host_cfg = config.get_config(host)
-    local('unison -batch . ssh://%s/%s'%(host,host_cfg['BATCHER']))
+    local("unison -batch . ssh://%s/%s" % (host, host_cfg["BATCHER"]))
 
-def run_cmd(cmd_line,host):
+
+def run_cmd(cmd_line, host):
     host_cfg = config.get_config(host)
-    with cd(host_cfg['BATCHER']):
-        run("python %s"%cmd_line)
+    with cd(host_cfg["BATCHER"]):
+        run("python %s" % cmd_line)
+
 
 def launch_remote(cmd_line, host, no_sync):
-    #Synchronize the LS in both machines
+    # Synchronize the LS in both machines
     if not no_sync:
         execute(sync, host)
-    #Delete the remote or -r option
-    cmd_line = re.sub(r'(--remote|-r) [^ ]+','',cmd_line)
-    execute(run_cmd,cmd_line,host,hosts=[host])
+    # Delete the remote or -r option
+    cmd_line = re.sub(r"(--remote|-r) [^ ]+", "", cmd_line)
+    execute(run_cmd, cmd_line, host, hosts=[host])

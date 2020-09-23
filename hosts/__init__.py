@@ -1,6 +1,6 @@
 # Copyright (c) 2017, Barcelona Supercomputing Center
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met: redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 # neither the name of the copyright holders nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -35,32 +35,35 @@ and to allow a diversity of hosts
 
 TODO: Rename hosts to job runners
 """
-import os 
+import os
+
 
 def current_host(config):
-    hosts={ }
+    hosts = {}
     import sys
     import inspect
-    import pkgutil 
+    import pkgutil
     import importlib
     from hosts.host import Host
-    
+
     # Try to get the current host as specified in the config file
     # Otherwise resort to the Default host
-    h_config =  config.get_global_config()['host']
-    host_class = h_config['type']
-    #Iterate through all the members of this class
-    module_names = [name for _, name, _ in pkgutil.iter_modules([os.path.dirname(__file__)])]
+    h_config = config.get_global_config()["host"]
+    host_class = h_config["type"]
+    # Iterate through all the members of this class
+    module_names = [
+        name for _, name, _ in pkgutil.iter_modules([os.path.dirname(__file__)])
+    ]
     for mod in module_names:
-        importlib.import_module(__name__+'.'+mod)
+        importlib.import_module(__name__ + "." + mod)
 
     for mod in module_names:
-        for name, obj in inspect.getmembers(sys.modules[__name__+'.'+mod]):
+        for name, obj in inspect.getmembers(sys.modules[__name__ + "." + mod]):
             if inspect.isclass(obj):
-                hosts[obj.__name__]=obj
-   
+                hosts[obj.__name__] = obj
+
     if host_class in hosts:
-        return hosts[host_class](h_config) 
+        return hosts[host_class](h_config)
     else:
         host = Host(h_config)
 
