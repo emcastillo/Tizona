@@ -132,7 +132,9 @@ class CSV(object):
     def __print_csv_aux(self, cur_level, csv_line=[],output=None):
 
         if type(cur_level) is list:
-            print(','.join(map(str,csv_line) + map(str,cur_level)), file=output)
+            csv_line = [str(line) for line in csv_line]
+            cur_level = [str(x) for x in cur_level]
+            print(','.join(csv_line + cur_level), file=output)
             return 
         
         for key in cur_level:

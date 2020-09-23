@@ -1,6 +1,6 @@
 import os
 import subprocess
-from host import Host
+from hosts.host import Host
 
 slurm_script = r"""#!/bin/bash
 #SBATCH -N %(nodes)d

@@ -28,7 +28,7 @@
 # Authors: E. Castillo (Barcelona Supercomputing Center)
 
 import os
-from host import Host
+from hosts.host import Host
 
 grideng_script=r"""#!/bin/bash
 # Launch script for clusters using gridengine

@@ -27,14 +27,7 @@
 #
 # Authors: E. Castillo (Barcelona Supercomputing Center)
 
-
-try:
-    from sklearn import model_selection
-    from sklearn.model_selection import ParameterGrid
-except ImportError:
-    #Rely on an older sklearn version
-    from sklearn import grid_search
-    from sklearn.grid_search import  ParameterGrid
+import itertools
 
 from collections import defaultdict, deque
 
@@ -92,5 +85,6 @@ class GridSampler(Sampler):
         for param in experiment['params']:
             if type(experiment['params'][param]) is not list:
                 experiment['params'][param] = [experiment['params'][param] ]
+        inputs = experiment['params']
 
-        self.searcher = ParameterGrid(experiment['params'])
+        self.searcher = (dict(zip(inputs.keys(), values)) for values in itertools.product(*inputs.values()))

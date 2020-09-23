@@ -41,7 +41,7 @@ def eval_json_python(j_file):
         # TODO Add strings in list support
         if type(j_file[key]) is dict:
              eval_json_python(j_file[key])
-        elif (type(j_file[key]) is unicode) and (j_file[key][0:3]=='py:'):
+        elif (type(j_file[key]) is str) and (j_file[key][0:3]=='py:'):
              j_file[key] = eval(j_file[key][3:])
 
 class cd:

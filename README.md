@@ -2,8 +2,8 @@
 
 ## What is Tizona
 
-Tizona is a tool for launching experiments in HPC clusters
-and collect their results.
+Tizona is a tool for launching experiments in Kubernetes or clusters
+with a job manager and collect their results.
 
 Tizona allows users to specify their set of experiments in a single 
 json file and automatically generates and submits the corresponding 
@@ -13,7 +13,7 @@ Tizona is being developed at the Barcelona Supercomputing Center.
 
 ## Using Tizona with your application
 
-Tizona can use custom models to deal with workloads unique characteristics.
+Tizona can use custom models to deal with each workload unique characteristics.
 Models obbey a simple interface and can implement functionality such as
 writing a file configuration, or download a set of required files before launching the experiments.
 
@@ -26,7 +26,7 @@ in this file models and hosts specific configuration parameters are written.
 
 Tizona runs experiments using json files containing a "params" dict.
 Within this params dict, the values for the parameters are specified as scalar values or lists.
-If multiple parameters have a list as their value, Tizona will obtain all the possible combinations of all lists.
+If multiple parameters have a list as their value, Tizona will obtain all the possible combinations of all the lists.
 It is up to the module code to detect valid or invalid configurations of parameters within the job factory method.
 The example.json file shows how to create experiments.
 
@@ -111,12 +111,3 @@ with join clausules or subqueries
 ```
 $ python csv.py --file experiments/examples*json --csv-params nmess comp --csv-stats time --csv-out output.csv --csv-extra other_data.csv --csv-query "SELECT * from output INNER JOIN other_data ON output.param = other_data.param"
 ```
-
-## Customize some Tizona aspects
-
-### Rerunning experiments that failed
-
-Tizona detects if an experiment was already run by looking if its stdout file was created.
-It is possible to add a different functionality such as re-run if an error happened or re-run until a certain
-algorithmic condition is met you can edit the models/base/model.py is_executed Job method.
-

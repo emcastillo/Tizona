@@ -28,7 +28,7 @@
 # Authors: E. Castillo (Barcelona Supercomputing Center)
 
 from collections import deque
-from samplers import GridSampler
+from core.samplers import GridSampler
 from utils.files import read_json
 
 
@@ -89,7 +89,7 @@ class JobBuilder(object):
             files (list of str) In : files to read the experiments from
         """
         for json_file_path in files:
-            print 'Reading ',json_file_path
+            print('Reading ',json_file_path)
             exp_json = read_json(json_file_path)
             # This is a global exps json
             if ('sim_files' in exp_json):

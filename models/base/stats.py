@@ -84,7 +84,7 @@ class Stats(object):
             float : Average value for stat
         """
         try:
-            return np.average(map(float,self.stats[stat]))
+            return np.average([float(x) for x in self.stats[stat]])
         except:
             return None
 

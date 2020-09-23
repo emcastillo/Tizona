@@ -33,8 +33,7 @@ import hosts
 import random
 from collections import defaultdict, deque
 
-from builder import JobBuilder
-
+import core.builder
 from utils.files import read_json
 from results.CSVResults import Results
 
@@ -64,9 +63,9 @@ class Batcher(object):
         self.config = config
         
         # Parse Json Files
-        builder = JobBuilder(config)
-        self.experiments = builder.build(config.get_args().file)
-        self.global_desc = builder.get_global_desc()
+        job_builder = core.builder.JobBuilder(config)
+        self.experiments = job_builder.build(config.get_args().file)
+        self.global_desc = job_builder.get_global_desc()
 
     def run(self):
         """

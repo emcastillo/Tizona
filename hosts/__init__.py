@@ -43,7 +43,7 @@ def current_host(config):
     import inspect
     import pkgutil 
     import importlib
-    from host import Host
+    from hosts.host import Host
     
     # Try to get the current host as specified in the config file
     # Otherwise resort to the Default host
